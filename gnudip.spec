@@ -64,8 +64,8 @@ DNS name without having to give them their own IP address. This is the
 command line client for GnuDIP.
 
 %description clients -l pl
-GnuDIP is a service designed for an ISP to give its customers a static
-DNS name without having to give them their own IP address. To jest
+GnuDIP jest us³ug± stworzon± dla ISP, aby dawaæ klientom statyczne
+nazwy DNS bez potrzeby dawania im w³asnych adresów IP. To jest
 klient GnuDIP dzia³aj±cy z linii poleceñ.
 
 %prep
