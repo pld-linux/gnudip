@@ -7,6 +7,7 @@ Release:	1
 License:	GPL
 Group:		Networking/Daemons
 Source0:	ftp://ftp.cheapnet.net/pub/gnudip/%{name}-%{version}.tar.gz
+# Source0-md5:	83c3c5cf40dd76d136de47370791ebd1
 Source1:	gdips.init
 Source2:	gdips-configure
 Source3:	gdips-cleanup
