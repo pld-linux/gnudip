@@ -1,0 +1,11 @@
+--- gnudip-2.1.2.orig/gnudip2.cgi	Tue May  9 22:44:56 2000
++++ gnudip-2.1.2/gnudip2.cgi	Wed May 31 08:07:15 2000
+@@ -16,7 +16,7 @@
+   use MD5;
+   use strict;
+   my ($sth, $mons, $nummon, $printheader, $remote_ip);
+-  require 'gnudip-lib.pl';
++  require '/usr/lib/gnudip/gnudip-lib.pl';
+ 
+   #### Set up variables
+   my $gnudip2user = readconf('gnudipuser');

@@ -1,0 +1,49 @@
+#!/bin/sh
+#
+# Startup script for the GnuDIP server
+#
+# chkconfig: 345 99 15
+# description: The GnuDIP server allows users to set the current IP address
+#	       of their dynamic domain name.
+# processname: gdips.pl
+# config: /etc/gnudip.conf
+
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+RETVAL=0
+
+# See how we were called.
+case "$1" in
+  start)
+	echo -n "Starting gdips: "
+#	daemon gdips.pl
+#	daemon --check gdips.pl "perl /usr/sbin/gdips.pl > /dev/null 2>&1 &"
+	/usr/sbin/gdips.pl > /dev/null 2>&1 &
+	RETVAL=$?
+	echo
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/gdips
+	;;
+  stop)
+	echo -n "Shutting down gdips: "
+#	killproc gdips.pl
+	killall gdips.pl
+	RETVAL=$?
+	echo
+	if [ $RETVAL -eq 0 ] ; then
+	  rm -f /var/lock/subsys/gdips
+	  rm -f /var/run/gdips.pid
+	fi
+	;;
+  restart)
+	$0 stop
+	$0 start
+	RETVAL=$?
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $RETVAL

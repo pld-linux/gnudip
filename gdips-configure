@@ -1,0 +1,226 @@
+#!/usr/bin/perl
+# Adapted from the original install script, but modified extensively 
+#   for Debian by Randolph Chung <tausq@debian.org> Feb 20, 1999
+# Modified for Red Hat RPM by Jason Spangler <jasons@usemail.com> 3/30/2000
+# (c) 1999 GPL
+
+use strict;
+use DBI;
+use MD5;
+
+my ($sth, $dbtype, $onboot, $initdir, $isinuser, $isindb);
+my ($mysqlversion, $dbhost, $dontcreatedb);
+my $VER = "2.0.6";
+
+# exit 0 if ($ARGV[0] ne "configure");
+
+# Chmod the config file
+my ($uid, $gid) = ((getpwnam("gnudip"))[2], (getgrnam("root"))[2]);
+chown $uid, $gid, "/etc/gnudip.conf";
+
+print "\n-Setting up database for GnuDIP version $VER-\n\n";
+
+print "Detecting MySQL version installed....";
+#$mysqlversion = `dpkg -l |grep mysql-server|tr -s ' ' | cut -d' ' -f3`;
+#$mysqlversion =~ s/^(\d+\.\d+\.\d+).*$/$1/;
+$mysqlversion = `rpm -q MySQL | grep MySQL | cut -f 2 -d -`;
+$mysqlversion =~ s/^(\d+\.\d+\.\d+).*$/$1/;
+if ($mysqlversion) {
+  print "$mysqlversion\n";
+  $mysqlversion =~ s/^\d+\.(\d+\.\d+).*$/$1/;
+  if ($mysqlversion < 22.11) {
+    $dbtype = 1;
+  } else {
+    $dbtype = 2;
+  }
+  $dbhost = '127.0.0.1';
+  if (-e "/var/lib/mysql/gnudip2") {
+    print "Looks like you already have tables set up.... \n";
+    print "         ********* WARNING ************ WARNING ***********     \n";
+    print " This version of GnuDIP breaks backward compatibility. Your databases\n";
+    print " are being left alone right now. When you are ready to upgrade, run\n";
+    print " the upgrade_gnudip script which will create a blank database with the\n";
+    print " new schema\n\n";
+    $dontcreatedb = 1;
+  }
+} else {
+  print "sorry, i can't figure it out....\n";
+  print "On which host is the database located? [127.0.0.1] ";
+  $dbhost = <STDIN>;
+  chomp($dbhost);
+  $dbhost = '127.0.0.1' if ($dbhost eq "");
+  while ($dbtype ne "1" && $dbtype ne "2") {
+    print "Please select database type \n\t\t 1 - MySQL < 3.22.11\n\t\t[2 - MySQL >= 3.22.11] ";
+    $dbtype = <STDIN>;
+    chop($dbtype);
+    if ($dbtype eq "") {
+      $dbtype = "2";
+    }
+  }
+}
+
+my $gnudipuser = 'gnudip';
+print "GnuDIP uses a password to authenticate transactions with the MySQL database.\nEnter the password you wish to use for this purpose: ";
+my $gnudippass = &ReadPassword;
+
+# write some stuff to the config file....
+open (ETC, "/etc/gnudip.conf") || die $!;
+my @etc = <ETC>;
+close ETC;
+open (ETC, ">/etc/gnudip.conf") || die $!;
+foreach (@etc) {
+  if (/^gnudippassword\s*=/) {
+    print ETC "gnudippassword = $gnudippass\n";
+  } elsif (/^gnudiphost\s*=/) {
+    print ETC "gnudiphost = $dbhost\n";
+  } else {
+    print ETC;
+  }
+}
+close ETC;
+my @pwent;
+@pwent = getpwnam('gnudip');
+my $fileuid = $pwent[2];
+@pwent = getpwnam('www-data');
+my $filegid = $pwent[3];
+chown($fileuid, $filegid, '/etc/gnudip.conf') || die "chown";
+chmod(0640, '/etc/gnudip.conf') || die "chmod";
+
+my $daemonuser = "nobody";
+my $daemongroup = "nobody";
+
+if (!$dontcreatedb) {
+  print "\n\nIn order to set up tables in the database, we need a user with permissions\n";
+  print "to create tables in the database.\nPlease enter the name of such a user [root]: ";
+  my $rootmysqluser = <STDIN>;
+  chomp($rootmysqluser);
+  if ($rootmysqluser eq "") {
+    $rootmysqluser = "root";
+  }
+
+  print "Enter $rootmysqluser\'s mysql password: ";
+  my $rootmysqlpass = &ReadPassword;
+  
+  print "\n\nFinally, we need to set up a password for an admin who can change\n";
+  print "settings online: ";
+  my $adminpassword = &ReadPassword;
+
+  my $mysqlpassstring;
+  if ($rootmysqlpass eq '') {
+    $mysqlpassstring = "";
+  } else {
+    $mysqlpassstring = "-p$rootmysqlpass";
+  }
+
+  ######### DO INSTALL STUFF ################
+  print "\n\n*********** CREATING TABLES *************\n";
+
+  system("mysqladmin -u$rootmysqluser $mysqlpassstring create gnudip2") && die "mysqldmin";
+  system("mysql -u$rootmysqluser $mysqlpassstring gnudip2 < /usr/doc/gnudip-server-2.1.2/gnudip2.db") && die "mysql";
+
+  my $dbh = DBI->connect("DBI:mysql:database=mysql;host=$dbhost",$rootmysqluser, $rootmysqlpass) || die "Could not connect to database server. Invalid login?\n";
+  $sth = $dbh->prepare("select user from user where user = \"$gnudipuser\"");
+  $sth->execute || die $dbh->errstr;
+  $isinuser = $sth->fetchrow_array;
+  $sth = $dbh->prepare("select user from db where user = \"$gnudipuser\" and db = \"gnudip2\"");
+  $sth->execute || die $dbh->errstr;
+  $isindb = $sth->fetchrow_array;
+
+  if ($dbtype eq "1") {
+    if ($isinuser eq '') {
+      $sth = $dbh->do("insert into user \(host, user, password\) values \(\"localhost\", \"$gnudipuser\", password\(\"$gnudippass\"\)\)") || die "Could not add user to MySQL database\n";
+    } else {
+      $sth = $dbh->do("update user set password = password\(\"$gnudippass\"\) where user = \"$gnudipuser\"") || die "Could not add user to MySQL database\n";
+    }
+    if ($isindb eq '') {
+      $sth = $dbh->do("insert into db values \(\"localhost\", \"gnudip2\", \"$gnudipuser\", \"Y\", \"Y\", \"Y\", \"Y\", \"N\", \"N\"\)") || die "Could not add database rule entry\n";
+    }
+
+  } elsif ($dbtype eq "2") {
+    if ($isinuser eq '') {
+      $sth = $dbh->do("insert into user \(host, user, password\) values \(\"localhost\", \"$gnudipuser\", password\(\"$gnudippass\"\)\)") || die "Could not add user to MySQL database\n";
+    } else {
+      $sth = $dbh->do("update user set password = password\(\"$gnudippass\"\) where user = \"$gnudipuser\"") || die "Could not add user to MySQL database\n";
+    }
+    if ($isindb eq '') {
+      $sth = $dbh->do("insert into db values \(\"localhost\", \"gnudip2\", \"$gnudipuser\", \"Y\", \"Y\", \"Y\", \"Y\", \"N\", \"N\", \"N\", \"N\", \"N\", \"N\"\)") || die "Could not add database rule entry\n";
+    }
+  }
+  undef $sth;
+  $dbh->disconnect;
+
+  $dbh = DBI->connect("DBI:mysql:database=gnudip2;host=$dbhost",$rootmysqluser, $rootmysqlpass) || die "Could not connect to database server. Invalid login?\n";
+#  my $encpass = crypt($adminpassword, 'ad');
+  my $encpass = md5sum($adminpassword);
+
+#  $sth = $dbh->do("INSERT INTO users VALUES (1,'admin','$encpass','http://gnudip.cheapnet.net','1999-01-18 14:33:04','ADMIN','1.1.1.1','NO')") || die "Cannot create admin user ".$dbh->errstr;
+  $sth = $dbh->do("INSERT INTO users VALUES (1,'admin','$encpass','dyn.cheapnet.net','root\@example.com','1999-09-02 10:02:59','http://gnudip.cheapnet.net','1999-10-16 19:14:24','ADMIN','158.222.90.4','NO')") || die "Cannot create admin user ".$dbh->errstr;
+  undef $sth;
+
+  system("mysqladmin -u$rootmysqluser $mysqlpassstring reload") && die "reload";
+
+  $dbh->disconnect;
+}
+
+  system("sed -e s/#MYSQLUSER#/$gnudipuser/g -e s/#MYSQLPASS#/$gnudippass/g -e s/#DAEMONUSER#/$daemonuser/g -e s/#DAEMONGROUP#/$daemongroup/g < /etc/gnudip.conf > /tmp/gnudip-tmp1");
+
+	system("install -m 660 -o root -g $daemongroup /tmp/gnudip-tmp1 /etc/gnudip.conf");
+	print "Succesfully installed gnudip.conf into /etc\n";
+	unlink("/tmp/gnudip-tmp1");
+
+my $hostname = `hostname --fqdn`;
+chomp($hostname);
+print <<EOF;
+After the server has started, go to 
+      http://$hostname/cgi-bin/gnudip2.cgi
+and log in as 'admin' to change your settings.
+
+If you do not already have mysql server and bind setup, you should do that 
+before attempting to use this package. They can run on different machines than 
+the one on which gnudip runs.
+
+You also need to set up a DNS zone file for your dynamic domain. Please
+see /usr/doc/gnudip-server-2.1.2/README for details.
+EOF
+
+# Set up the init.d stuff...
+# system ("update-rc.d gnudip defaults 99 49 >/dev/null") && die "update-rc.d";
+# system ("/etc/init.d/gnudip start") && die "Cannot start gnudip";
+# system ("/etc/rc.d/init.d/gdips start") && die "Cannot start gnudip";
+
+exit 0;
+
+sub ReadPassword {
+  system("/bin/stty -echo") && die "stty";
+  my $r = <STDIN>;
+  chomp($r);
+  system("/bin/stty echo") && die "stty";
+  print "\n";
+  return $r;
+}
+
+sub TestQuery {
+  # returns true if the query runs successfully  
+  my $dbhost; my $db = shift; my $sql = shift;
+
+  my $dbh = DBI->connect("DBI:mysql:database=$dbhost");
+  return 0 if (!$dbh);
+  my $sth = $dbh->do($sql);
+  $dbh->disconnect;
+  return 0 if (!$sth);
+  undef $sth;
+  return ($sth->rows > 0);
+}
+
+#### Returns MD5 sum on string
+sub md5sum {
+
+ my $string = shift;
+ 
+ my $md5 = new MD5;
+ $md5->add($string);
+ my $digest = $md5->digest();
+ my $md5sum = unpack("H*", $digest);
+
+ return $md5sum;
+}

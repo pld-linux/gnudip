@@ -1,0 +1,36 @@
+#!/usr/bin/perl
+
+#if ($ARGV[0] eq "purge") {
+#  system("update-rc.d gnudip remove >/dev/null") && die $!;
+	system ("/etc/rc.d/init.d/gdips stop");
+
+  print "In order to completely remove gnudip from your system, we need to\n";
+  print "clean out some data from the database. Please provide the username\n";
+  print "of a user who has permissions to drop databases and alter the grant\n";
+  print "tables: [root] ";
+  $rootuser = <STDIN>;
+  chomp($rootuser);
+  $rootuser = "root" if (!$rootuser);
+
+  print "Now, please give $rootuser\'s password: ";
+  $rootpass = &ReadPassword;
+
+  open (O, "|mysql -u $rootuser -p$rootpass") || die $!;
+  print O "\\u mysql\n";
+  print O "delete from user where User='gnudip';\n";
+  print O "drop database gnudip2\n";
+  print O "\\q\n";
+  close O;
+
+  system("mysqladmin -u $rootuser -p$rootpass reload") && die $!;
+#}
+
+sub ReadPassword {
+  system("/bin/stty -echo") && die "stty";
+  my $r = <STDIN>;
+  chomp($r);
+  system("/bin/stty echo") && die "stty";
+  print "\n";
+  return $r;
+}
+# End automatically added section

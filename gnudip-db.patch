@@ -1,0 +1,8 @@
+--- gnudip-2.1.2.orig/gnudip2.db	Thu Nov  4 18:42:30 1999
++++ gnudip-2.1.2/gnudip2.db	Tue May 30 22:45:18 2000
+@@ -91,4 +91,4 @@
+ # Dumping data for table 'users'
+ #
+ 
+-INSERT INTO users VALUES (1,'admin','4ce340a2eb6368b8d275e3b2a49b3295','dyn.cheapnet.net','root@example.com','1999-09-02 10:02:59','http://gnudip.cheapnet.net','1999-10-16 19:14:24','ADMIN','158.222.90.4','NO');
++# INSERT INTO users VALUES (1,'admin','4ce340a2eb6368b8d275e3b2a49b3295','dyn.cheapnet.net','root@example.com','1999-09-02 10:02:59','http://gnudip.cheapnet.net','1999-10-16 19:14:24','ADMIN','158.222.90.4','NO');

@@ -1,0 +1,11 @@
+--- gnudip-2.1.2.orig/gdips.pl	Tue May  9 22:44:56 2000
++++ gnudip-2.1.2/gdips.pl	Tue May 30 16:48:58 2000
+@@ -20,7 +20,7 @@
+ use Getopt::Std;
+ use strict;
+ my ($i, $sth, $sqldatetime);
+-require 'gnudip-lib.pl';
++require '/usr/lib/gnudip/gnudip-lib.pl';
+ 
+ my $VER = "2.1.2";
+ 

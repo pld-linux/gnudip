@@ -1,0 +1,23 @@
+--- gnudip-2.1.2.orig/gdipc.pl	Tue May  9 22:44:56 2000
++++ gnudip-2.1.2/gdipc.pl	Tue May 30 17:54:52 2000
+@@ -145,13 +145,14 @@
+         print "   gdipc.pl: You must first set up your prefenrences with gdipc.pl -c\n";
+         exit;
+       } else {
+-	# JMS Hack: read all lines from config file in case of multiple hosts
+-	while (<CONFIG>) {
+-		chomp;
++				# JMS Hack: read all lines from config file in case of multiple hosts
++				while (<CONFIG>)
++					{
++					chomp;
+ 	        my ($username, $pass, $domain, $serverip) = split(/:/);
+-        	sendlogin($username, $pass, $domain, $serverip, "0");
+-       		close(CONFIG);
+-	}
++        	sendlogin($username, $pass, $domain, $serverip, "0");
++					}
++        close(CONFIG);
+      }
+    }
+ 

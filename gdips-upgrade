@@ -1,0 +1,46 @@
+#!/bin/sh
+
+set -e
+
+cat <<EOF
+This will upgrade your GnuDIP database from the 2.0 format to the 2.1 format.
+Data in the old database, unfortunately, will not be automatically transferred
+over to the new database. You should make a backup of your database files in
+/var/lib/mysql/gnudip2 before continuing with this upgrade. Please see
+/usr/doc/gnudip-server-2.1.2/UPDATE for more information.
+
+REPEAT: You should make a backup of your database files before continuing.
+
+Ready to continue installation? [N/yes]
+EOF
+
+read ans
+test "$ans" = "yes" || exit 0
+
+echo "Continuing upgrade...."
+
+echo "To update the database, you need to provide a username and password of"
+echo " a user with privileges to drop and create databases."
+
+echo -n "mysql admin user: "
+read user
+if [ -z "$user" ]; then
+  echo "no user specified. abort!"
+  exit 0
+fi
+
+echo -n "$user's password: (will not echo) "
+stty -echo
+read password
+stty echo
+
+if [ -n "$password" ]; then
+  password="-p$password"
+fi
+
+if [ -d /var/lib/mysql/gnudip2 ]; then
+  mysqladmin -u$user $password drop gnudip2 
+fi
+
+mysqladmin -u$user $password create gnudip2
+mysql -u$user $password gnudip2 < /usr/doc/gnudip-server-2.1.2/gnudip2.db
