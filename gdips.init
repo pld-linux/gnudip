@@ -13,37 +13,43 @@
 . /etc/rc.d/init.d/functions
 
 RETVAL=0
-
 # See how we were called.
 case "$1" in
   start)
-	echo -n "Starting gdips: "
-#	daemon gdips.pl
-#	daemon --check gdips.pl "perl /usr/sbin/gdips.pl > /dev/null 2>&1 &"
-	/usr/sbin/gdips.pl > /dev/null 2>&1 &
-	RETVAL=$?
-	echo
-	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/gdips
-	;;
-  stop)
-	echo -n "Shutting down gdips: "
-#	killproc gdips.pl
-	killall gdips.pl
-	RETVAL=$?
-	echo
-	if [ $RETVAL -eq 0 ] ; then
-	  rm -f /var/lock/subsys/gdips
-	  rm -f /var/run/gdips.pid
+	# Check if the service is already running?
+	if [ ! -f /var/lock/subsys/gdips ]; then
+		msg_starting gdips
+#		daemon gdips.pl
+#		daemon --check gdips.pl "perl /usr/sbin/gdips.pl > /dev/null 2>&1 &"
+		busy
+		/usr/sbin/gdips.pl > /dev/null 2>&1 &
+		RETVAL=$?
+		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/gdips && ok || fail
+	else
+		msg_already_running gdips
 	fi
 	;;
-  restart)
+  stop)
+	if [ -f /var/lock/subsys/gdips ]; then
+		msg_stopping gdips
+#		killproc gdips.pl
+		killall gdips.pl
+		[ $? -eq 0 ] && ok || died
+		rm -f /var/lock/subsys/gdips /var/run/gdips.pid >/dev/null 2>&1
+	else
+		msg_not_running gdips
+	fi
+	;;
+  status)
+	;;
+  restart|force-reload)
 	$0 stop
 	$0 start
-	RETVAL=$?
+	exit $?
 	;;
   *)
-	echo "Usage: $0 {start|stop|restart}"
-	exit 1
+	msg_usage "$0 {start|stop|restart|force-reload|status}"
+	exit 3
 esac
 
 exit $RETVAL
