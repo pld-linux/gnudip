@@ -2,11 +2,11 @@
 #
 # Startup script for the GnuDIP server
 #
-# chkconfig: 345 99 15
-# description: The GnuDIP server allows users to set the current IP address
-#	       of their dynamic domain name.
-# processname: gdips.pl
-# config: /etc/gnudip.conf
+# chkconfig:	345 99 15
+# description:	The GnuDIP server allows users to set the current IP address \
+#		of their dynamic domain name.
+# processname:	gdips.pl
+# config:	/etc/gnudip.conf
 
 
 # Source function library.
