@@ -120,7 +120,7 @@ echo
 
 %files
 %defattr(644,root,root,755)
-%doc README UPDATE README.mysql gnudip2.db ChangeLog dyn.example.com.zone COPYING
+%doc README UPDATE README.mysql gnudip2.db ChangeLog dyn.example.com.zone
 %config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/gnudip.conf
 %attr(754,root,root) /etc/rc.d/init.d/gdips
 %attr(755,root,root) %{_sbindir}/gdips.pl
@@ -133,5 +133,5 @@ echo
 
 %files clients
 %defattr(644,root,root,755)
-%doc README UPDATE ChangeLog COPYING
+%doc README UPDATE ChangeLog
 %attr(755,root,root) %{_bindir}/gdipc.pl
