@@ -1,4 +1,4 @@
-%include        /usr/lib/rpm/macros.perl
+%include	/usr/lib/rpm/macros.perl
 Summary:	GnuDIP - static DNS name without static IP solution
 Summary(pl):	GnuDIP - rozwi±zanie problemu statycznej nazwy DNS bez statycznego IP
 Name:		gnudip
@@ -96,9 +96,9 @@ rm -rf $RPM_BUILD_ROOT
 %post
 /sbin/chkconfig --add gdips
 if [ -f /var/lock/subsys/gdips ]; then
-        /etc/rc.d/init.d/gdips restart >&2
+	/etc/rc.d/init.d/gdips restart >&2
 else
-        echo "Run \"/etc/rc.d/init.d/gdips start\" to start gdips daemon."
+	echo "Run \"/etc/rc.d/init.d/gdips start\" to start gdips daemon."
 fi
 echo
 echo "Now run %{_bindir}/gdips-configure to configure your gnudip server."
@@ -106,10 +106,10 @@ echo
 
 %preun
 if [ "$1" = "0" ]; then
-        if [ -f /var/lock/subsys/gdips ]; then
-                /etc/rc.d/init.d/gdips stop >&2
-        fi
-        /sbin/chkconfig --del gdips
+	if [ -f /var/lock/subsys/gdips ]; then
+		/etc/rc.d/init.d/gdips stop >&2
+	fi
+	/sbin/chkconfig --del gdips
 fi
 
 %post clients
