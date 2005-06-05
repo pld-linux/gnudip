@@ -18,6 +18,7 @@ Patch2:		%{name}-db.patch
 Patch3:		%{name}-cgi.patch
 URL:		http://gnudip.cheapnet.net/
 BuildRequires:	perl-devel
+BuildRequires:	rpm-perlprov
 Requires(post,preun):	/sbin/chkconfig
 Requires:	/usr/sbin/ndc
 BuildArch:	noarch
