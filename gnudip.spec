@@ -66,8 +66,8 @@ command line client for GnuDIP.
 
 %description clients -l pl
 GnuDIP jest us³ug± stworzon± dla ISP, aby dawaæ klientom statyczne
-nazwy DNS bez potrzeby dawania im w³asnych adresów IP. To jest
-klient GnuDIP dzia³aj±cy z linii poleceñ.
+nazwy DNS bez potrzeby dawania im w³asnych adresów IP. To jest klient
+GnuDIP dzia³aj±cy z linii poleceñ.
 
 %prep
 %setup -q
@@ -123,7 +123,7 @@ echo
 %files
 %defattr(644,root,root,755)
 %doc README UPDATE README.mysql gnudip2.db ChangeLog dyn.example.com.zone
-%config(noreplace) %verify(not size mtime md5) %{_sysconfdir}/gnudip.conf
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/gnudip.conf
 %attr(754,root,root) /etc/rc.d/init.d/gdips
 %attr(755,root,root) %{_sbindir}/gdips.pl
 %dir %{_libdir}/gnudip
