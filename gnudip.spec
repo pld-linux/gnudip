@@ -1,6 +1,6 @@
 %include	/usr/lib/rpm/macros.perl
 Summary:	GnuDIP - static DNS name without static IP solution
-Summary(pl):	GnuDIP - rozwi±zanie problemu statycznej nazwy DNS bez statycznego IP
+Summary(pl.UTF-8):   GnuDIP - rozwiÄ…zanie problemu statycznej nazwy DNS bez statycznego IP
 Name:		gnudip
 Version:	2.1.2
 Release:	1
@@ -39,24 +39,24 @@ hostname will be automatically be updated without having to run any
 other sort of client application and then they would be redirected to
 the URL they set in their GnuDIP settings.
 
-%description -l pl
-GnuDIP jest us³ug± stworzon± dla ISP, aby dawaæ klientom statyczne
-nazwy DNS bez potrzeby dawania im w³asnych adresów IP. Jest to prosty
-zamiennik tego, czym by³o ml.org. GnuDIP ma dwie g³ówne czê¶ci po
-stronie serwera. Pierwsz± jest wielow±tkowy serwer, s³uchaj±cy na
-porcie 3495 i przyjmuj±cy po³±czenia od aplikacji klienckich, aby
-uaktualniæ ich nazwê hosta; drug± jest skrypt CGI, bêd±cy narzêdziem
-do administrowania oraz do zarz±dzania w³asnymi kontami przez
-u¿ytkowników. Przy u¿yciu tego CGI u¿ytkownik mo¿e ustawiæ swoj±
-stronê domow±, aby pó¼niej ustawiæ specjalny URL jako domy¶ln± stronê
-w przegl±darce, dziêki czemu za ka¿dym razem, kiedy uruchomi
-przegl±darkê, bêdzie mia³ uaktualnion± nazwê hosta bez potrzeby
-uruchamiania innych aplikacji klienckiej, a przegl±darka zostanie
+%description -l pl.UTF-8
+GnuDIP jest usÅ‚ugÄ… stworzonÄ… dla ISP, aby dawaÄ‡ klientom statyczne
+nazwy DNS bez potrzeby dawania im wÅ‚asnych adresÃ³w IP. Jest to prosty
+zamiennik tego, czym byÅ‚o ml.org. GnuDIP ma dwie gÅ‚Ã³wne czÄ™Å›ci po
+stronie serwera. PierwszÄ… jest wielowÄ…tkowy serwer, sÅ‚uchajÄ…cy na
+porcie 3495 i przyjmujÄ…cy poÅ‚Ä…czenia od aplikacji klienckich, aby
+uaktualniÄ‡ ich nazwÄ™ hosta; drugÄ… jest skrypt CGI, bÄ™dÄ…cy narzÄ™dziem
+do administrowania oraz do zarzÄ…dzania wÅ‚asnymi kontami przez
+uÅ¼ytkownikÃ³w. Przy uÅ¼yciu tego CGI uÅ¼ytkownik moÅ¼e ustawiÄ‡ swojÄ…
+stronÄ™ domowÄ…, aby pÃ³Åºniej ustawiÄ‡ specjalny URL jako domyÅ›lnÄ… stronÄ™
+w przeglÄ…darce, dziÄ™ki czemu za kaÅ¼dym razem, kiedy uruchomi
+przeglÄ…darkÄ™, bÄ™dzie miaÅ‚ uaktualnionÄ… nazwÄ™ hosta bez potrzeby
+uruchamiania innych aplikacji klienckiej, a przeglÄ…darka zostanie
 przekierowana pod podany w ustawieniach URL.
 
 %package clients
 Summary:	GnuDIP client
-Summary(pl):	Klient GnuDIP
+Summary(pl.UTF-8):   Klient GnuDIP
 Group:		Networking/Daemons
 
 %description clients
@@ -64,10 +64,10 @@ GnuDIP is a service designed for an ISP to give its customers a static
 DNS name without having to give them their own IP address. This is the
 command line client for GnuDIP.
 
-%description clients -l pl
-GnuDIP jest us³ug± stworzon± dla ISP, aby dawaæ klientom statyczne
-nazwy DNS bez potrzeby dawania im w³asnych adresów IP. To jest klient
-GnuDIP dzia³aj±cy z linii poleceñ.
+%description clients -l pl.UTF-8
+GnuDIP jest usÅ‚ugÄ… stworzonÄ… dla ISP, aby dawaÄ‡ klientom statyczne
+nazwy DNS bez potrzeby dawania im wÅ‚asnych adresÃ³w IP. To jest klient
+GnuDIP dziaÅ‚ajÄ…cy z linii poleceÅ„.
 
 %prep
 %setup -q
