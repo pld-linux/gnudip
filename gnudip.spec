@@ -1,6 +1,6 @@
 %include	/usr/lib/rpm/macros.perl
 Summary:	GnuDIP - static DNS name without static IP solution
-Summary(pl.UTF-8):   GnuDIP - rozwiązanie problemu statycznej nazwy DNS bez statycznego IP
+Summary(pl.UTF-8):	GnuDIP - rozwiązanie problemu statycznej nazwy DNS bez statycznego IP
 Name:		gnudip
 Version:	2.1.2
 Release:	1
@@ -56,7 +56,7 @@ przekierowana pod podany w ustawieniach URL.
 
 %package clients
 Summary:	GnuDIP client
-Summary(pl.UTF-8):   Klient GnuDIP
+Summary(pl.UTF-8):	Klient GnuDIP
 Group:		Networking/Daemons
 
 %description clients
