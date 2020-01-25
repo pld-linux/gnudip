@@ -1,4 +1,3 @@
-%include	/usr/lib/rpm/macros.perl
 Summary:	GnuDIP - static DNS name without static IP solution
 Summary(pl.UTF-8):	GnuDIP - rozwiązanie problemu statycznej nazwy DNS bez statycznego IP
 Name:		gnudip
